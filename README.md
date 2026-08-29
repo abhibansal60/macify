@@ -74,10 +74,17 @@ context will apply everything except the login screen and tell you so.
   extension's files while the shell is already running does nothing until
   you log out and back in — `gnome-extensions enable` will say the
   extension "does not exist" until then.
-- **`gnome-screenshot` / the GNOME Shell D-Bus screenshot API can be denied
-  outright** (`AccessDenied: Screenshot is not allowed`) depending on your
-  session's security policy. If you need a screenshot to verify the result,
-  take it manually (PrtScn or the built-in screenshot tool).
+- **`gnome-screenshot` is broken on GNOME Shell 50.** The Ubuntu-repo version
+  (41.0) calls the legacy `org.gnome.Shell.Screenshot` D-Bus interface
+  directly instead of going through the `xdg-desktop-portal`, and GNOME 50
+  now hard-denies that interface to any external caller —
+  `AccessDenied: Screenshot is not allowed`, even run interactively from your
+  own terminal. GNOME's own PrtScn overlay still works fine (it's internal to
+  the shell, doesn't cross that D-Bus interface at all). For a scriptable
+  fix, install `flameshot` instead (`sudo apt install flameshot`) — it goes
+  through the portal properly, prompts once for a one-time "Allow Screenshot"
+  permission, and after that `flameshot full -p out.png` just works,
+  including from non-interactive contexts.
 - **GTK4/libadwaita apps stay stock Adwaita.** Files, Settings, Text Editor,
   and anything else on GTK4 ignore GTK3 theme engines entirely — this is
   true on every distro, not a bug in this setup. No theme fixes it.
