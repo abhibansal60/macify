@@ -1,0 +1,79 @@
+#!/usr/bin/env bash
+# Toggle between the macOS (WhiteSur) theme and stock Ubuntu.
+set -euo pipefail
+
+GDM_LIVE="/usr/share/gnome-shell/theme/Yaru/gnome-shell-theme.gresource"
+GDM_BAK="${GDM_LIVE}.bak"
+GDM_MAC="$HOME/.local/share/macify/gdm-whitesur.gresource"
+
+current_state() {
+  [[ "$(gsettings get org.gnome.desktop.interface gtk-theme)" == "'WhiteSur-Dark'" ]] && echo mac || echo ubuntu
+}
+
+apply_mac() {
+  echo "Switching to macOS theme..."
+  gsettings set org.gnome.desktop.interface gtk-theme "WhiteSur-Dark"
+  gsettings set org.gnome.desktop.interface icon-theme "WhiteSur"
+  gsettings set org.gnome.desktop.interface cursor-theme "WhiteSur-cursors"
+  gsettings set org.gnome.desktop.interface color-scheme "prefer-dark"
+  gsettings set org.gnome.desktop.interface font-name "Inter 11"
+  gsettings set org.gnome.desktop.interface document-font-name "Inter 11"
+  gsettings set org.gnome.desktop.interface clock-show-weekday true
+  gsettings set org.gnome.desktop.interface clock-show-date true
+  gsettings set org.gnome.desktop.interface clock-format '12h'
+  gsettings set org.gnome.shell.extensions.user-theme name "WhiteSur-Dark"
+  gsettings set org.gnome.desktop.background picture-uri "file://$HOME/Pictures/Wallpapers/Sonoma-light.jpg"
+  gsettings set org.gnome.desktop.background picture-uri-dark "file://$HOME/Pictures/Wallpapers/Sonoma-dark.jpg"
+  gsettings set org.gnome.desktop.background picture-options "zoom"
+  gsettings set org.gnome.shell.extensions.dash-to-dock dock-position BOTTOM
+  gsettings set org.gnome.shell.extensions.dash-to-dock extend-height false
+  gsettings set org.gnome.shell.extensions.dash-to-dock dock-fixed false
+  gsettings set org.gnome.shell.extensions.dash-to-dock dash-max-icon-size 48
+  gsettings set org.gnome.shell.extensions.dash-to-dock click-action 'minimize'
+  gsettings set org.gnome.shell.extensions.dash-to-dock intellihide true
+  gnome-extensions enable user-theme@gnome-shell-extensions.gcampax.github.com
+  gnome-extensions enable unite@hardpixel.eu
+  local SD=~/.local/share/gnome-shell/extensions/unite@hardpixel.eu/schemas
+  local S="org.gnome.shell.extensions.unite"
+  gsettings --schemadir "$SD" set $S show-appmenu-button true
+  gsettings --schemadir "$SD" set $S hide-window-titlebars 'always'
+  gsettings --schemadir "$SD" set $S show-window-title 'always'
+  gsettings --schemadir "$SD" set $S show-window-buttons 'always'
+  gsettings --schemadir "$SD" set $S window-buttons-placement 'left'
+  gsettings --schemadir "$SD" set $S hide-activities-button 'always'
+  gsettings --schemadir "$SD" set $S show-legacy-tray true
+  gsettings --schemadir "$SD" set $S reduce-panel-spacing true
+  gsettings --schemadir "$SD" set $S extend-left-box true
+  if [[ -f "$GDM_MAC" ]]; then
+    echo "Restoring macOS GDM login theme (needs sudo)..."
+    sudo cp "$GDM_MAC" "$GDM_LIVE"
+  fi
+  echo "Done. macOS theme active (log out/in for GDM + full shell chrome refresh)."
+}
+
+apply_ubuntu() {
+  echo "Reverting to stock Ubuntu..."
+  gnome-extensions disable unite@hardpixel.eu || true
+  gnome-extensions disable user-theme@gnome-shell-extensions.gcampax.github.com || true
+  gsettings reset-recursively org.gnome.desktop.interface
+  gsettings reset-recursively org.gnome.desktop.background
+  gsettings reset-recursively org.gnome.shell.extensions.dash-to-dock
+  gsettings reset org.gnome.shell.extensions.user-theme name
+  if [[ -f "$GDM_BAK" ]]; then
+    echo "Restoring stock Ubuntu GDM login theme (needs sudo)..."
+    sudo cp "$GDM_BAK" "$GDM_LIVE"
+  fi
+  echo "Done. Stock Ubuntu look restored (log out/in for GDM + full shell chrome refresh)."
+}
+
+case "${1:-toggle}" in
+  mac) apply_mac ;;
+  ubuntu) apply_ubuntu ;;
+  toggle)
+    if [[ "$(current_state)" == "mac" ]]; then apply_ubuntu; else apply_mac; fi
+    ;;
+  *)
+    echo "Usage: macify [mac|ubuntu|toggle]"
+    exit 1
+    ;;
+esac
