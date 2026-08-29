@@ -12,6 +12,8 @@ because a login-screen theme lives under `/usr/share`.
 
 Tested on Ubuntu 26.04, GNOME Shell 50, Wayland.
 
+![Desktop with the macify theme applied](docs/screenshots/desktop.png)
+
 ## What it sets up
 
 | Component | What you get |
