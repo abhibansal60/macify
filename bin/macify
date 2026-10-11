@@ -6,31 +6,40 @@ GDM_LIVE="/usr/share/gnome-shell/theme/Yaru/gnome-shell-theme.gresource"
 GDM_BAK="${GDM_LIVE}.bak"
 GDM_MAC="$HOME/.local/share/macify/gdm-whitesur.gresource"
 
+# "schema key value" for every setting the mac theme changes; the value is the rest of the line
+MAC_SETTINGS=(
+  "org.gnome.desktop.interface gtk-theme WhiteSur-Dark"
+  "org.gnome.desktop.interface icon-theme WhiteSur"
+  "org.gnome.desktop.interface cursor-theme WhiteSur-cursors"
+  "org.gnome.desktop.interface color-scheme prefer-dark"
+  "org.gnome.desktop.interface font-name Inter 11"
+  "org.gnome.desktop.interface document-font-name Inter 11"
+  "org.gnome.desktop.interface clock-show-weekday true"
+  "org.gnome.desktop.interface clock-show-date true"
+  "org.gnome.desktop.interface clock-format 12h"
+  "org.gnome.shell.extensions.user-theme name WhiteSur-Dark"
+  "org.gnome.desktop.background picture-uri file://$HOME/Pictures/Wallpapers/Sonoma-light.jpg"
+  "org.gnome.desktop.background picture-uri-dark file://$HOME/Pictures/Wallpapers/Sonoma-dark.jpg"
+  "org.gnome.desktop.background picture-options zoom"
+  "org.gnome.shell.extensions.dash-to-dock dock-position BOTTOM"
+  "org.gnome.shell.extensions.dash-to-dock extend-height false"
+  "org.gnome.shell.extensions.dash-to-dock dock-fixed false"
+  "org.gnome.shell.extensions.dash-to-dock dash-max-icon-size 48"
+  "org.gnome.shell.extensions.dash-to-dock click-action minimize"
+  "org.gnome.shell.extensions.dash-to-dock intellihide true"
+)
+
 current_state() {
   [[ "$(gsettings get org.gnome.desktop.interface gtk-theme)" == "'WhiteSur-Dark'" ]] && echo mac || echo ubuntu
 }
 
 apply_mac() {
   echo "Switching to macOS theme..."
-  gsettings set org.gnome.desktop.interface gtk-theme "WhiteSur-Dark"
-  gsettings set org.gnome.desktop.interface icon-theme "WhiteSur"
-  gsettings set org.gnome.desktop.interface cursor-theme "WhiteSur-cursors"
-  gsettings set org.gnome.desktop.interface color-scheme "prefer-dark"
-  gsettings set org.gnome.desktop.interface font-name "Inter 11"
-  gsettings set org.gnome.desktop.interface document-font-name "Inter 11"
-  gsettings set org.gnome.desktop.interface clock-show-weekday true
-  gsettings set org.gnome.desktop.interface clock-show-date true
-  gsettings set org.gnome.desktop.interface clock-format '12h'
-  gsettings set org.gnome.shell.extensions.user-theme name "WhiteSur-Dark"
-  gsettings set org.gnome.desktop.background picture-uri "file://$HOME/Pictures/Wallpapers/Sonoma-light.jpg"
-  gsettings set org.gnome.desktop.background picture-uri-dark "file://$HOME/Pictures/Wallpapers/Sonoma-dark.jpg"
-  gsettings set org.gnome.desktop.background picture-options "zoom"
-  gsettings set org.gnome.shell.extensions.dash-to-dock dock-position BOTTOM
-  gsettings set org.gnome.shell.extensions.dash-to-dock extend-height false
-  gsettings set org.gnome.shell.extensions.dash-to-dock dock-fixed false
-  gsettings set org.gnome.shell.extensions.dash-to-dock dash-max-icon-size 48
-  gsettings set org.gnome.shell.extensions.dash-to-dock click-action 'minimize'
-  gsettings set org.gnome.shell.extensions.dash-to-dock intellihide true
+  local line schema key value
+  for line in "${MAC_SETTINGS[@]}"; do
+    read -r schema key value <<< "$line"
+    gsettings set "$schema" "$key" "$value"
+  done
   gnome-extensions enable user-theme@gnome-shell-extensions.gcampax.github.com
   gnome-extensions enable unite@hardpixel.eu
   local SD=~/.local/share/gnome-shell/extensions/unite@hardpixel.eu/schemas
@@ -55,10 +64,12 @@ apply_ubuntu() {
   echo "Reverting to stock Ubuntu..."
   gnome-extensions disable unite@hardpixel.eu || true
   gnome-extensions disable user-theme@gnome-shell-extensions.gcampax.github.com || true
-  gsettings reset-recursively org.gnome.desktop.interface
-  gsettings reset-recursively org.gnome.desktop.background
-  gsettings reset-recursively org.gnome.shell.extensions.dash-to-dock
-  gsettings reset org.gnome.shell.extensions.user-theme name
+  # reset only the keys apply_mac set, so the user's other settings (text scaling, accent color...) survive
+  local line schema key value
+  for line in "${MAC_SETTINGS[@]}"; do
+    read -r schema key value <<< "$line"
+    gsettings reset "$schema" "$key"
+  done
   if [[ -f "$GDM_BAK" ]]; then
     echo "Restoring stock Ubuntu GDM login theme (needs sudo)..."
     sudo cp "$GDM_BAK" "$GDM_LIVE"
