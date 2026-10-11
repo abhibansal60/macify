@@ -57,8 +57,7 @@ chmod +x ~/.local/bin/macify
 cat <<'EOF'
 
 Done. Log out and back in, then run:
-  gnome-extensions enable user-theme@gnome-shell-extensions.gcampax.github.com
-  gnome-extensions enable unite@hardpixel.eu
+  macify mac      # enables both extensions and applies the Unite settings
 
 From then on, toggle between this theme and stock Ubuntu any time with:
   macify          # flips based on current state
