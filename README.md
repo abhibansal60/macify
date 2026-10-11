@@ -6,8 +6,8 @@ Inter font, Sonoma wallpaper, and a matching GDM login screen.
 
 **This needs `sudo` and touches system files** (apt packages, the GDM login
 theme). It is not rootless, and it's a different concern from a terminal/CLI
-setup like [cyberdeck-setup](https://github.com/abhibansal60/cyberdeck-setup)
-— that one deliberately stays in `~/.local` with zero sudo; this one can't,
+setup like [AI Workbench](https://github.com/abhibansal60/ai-workbench)
+— that one installs its core tools into `~/.local` without sudo; this one can't,
 because a login-screen theme lives under `/usr/share`.
 
 Tested on Ubuntu 26.04, GNOME Shell 50, Wayland.

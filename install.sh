@@ -4,7 +4,7 @@
 # Sonoma wallpaper, themed GDM login screen.
 #
 # Requires: Ubuntu + GNOME Shell (tested on 26.04 / GNOME Shell 50), sudo.
-# NOT rootless like cyberdeck-setup — this touches system packages and the
+# NOT rootless like ai-workbench — this touches system packages and the
 # GDM login theme. Read before running.
 set -euo pipefail
 
