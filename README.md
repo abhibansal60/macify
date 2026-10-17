@@ -76,9 +76,11 @@ macify mac      # re-apply the macOS theme
 macify          # flip based on current state
 ```
 
-The revert path uses `gsettings reset-recursively`, so it restores your
-actual Ubuntu package defaults rather than guessed values — nothing drifts
-between runs. The GDM step swaps between the stock file WhiteSur's own
+The revert path runs `gsettings reset` on exactly the keys `macify mac`
+sets (one list in `bin/macify`), so it restores your actual Ubuntu package
+defaults rather than guessed values, and leaves your other settings (text
+scaling, accent color, battery percentage, dock options macify doesn't
+touch) alone. The GDM step swaps between the stock file WhiteSur's own
 installer already backs up (`.bak`) and a stashed copy of the macOS one
 (`~/.local/share/macify/gdm-whitesur.gresource`), so neither direction needs
 a rebuild.
