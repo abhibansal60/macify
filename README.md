@@ -60,11 +60,12 @@ cd macify
 
 Log out and back in when it finishes (GNOME only picks up freshly-installed
 extensions on a session restart — not a bug, just how extension discovery
-works), then enable the two shell extensions:
+works), then run `macify mac` once. It enables the two shell extensions and
+applies the Unite settings (left traffic lights, app menu, hidden titlebars),
+which the first pass during install can't reach before the extensions exist:
 
 ```sh
-gnome-extensions enable user-theme@gnome-shell-extensions.gcampax.github.com
-gnome-extensions enable unite@hardpixel.eu
+macify mac
 ```
 
 ## Reverting
