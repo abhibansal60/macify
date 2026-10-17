@@ -14,6 +14,28 @@ Tested on Ubuntu 26.04, GNOME Shell 50, Wayland.
 
 ![Desktop with the macify theme applied](docs/screenshots/desktop.png)
 
+## Start here: paste this to your agent
+
+On the Ubuntu GNOME machine you want to reskin, paste this into Claude Code or any coding agent:
+
+```text
+Make this Ubuntu GNOME desktop look like macOS with macify (https://github.com/abhibansal60/macify).
+1. Clone it to ~/code/macify, or run `git pull` there if it already exists. Read README.md,
+   install.sh and bin/macify in full.
+2. Check my machine with read-only commands: `lsb_release -ds`, `gnome-shell --version`,
+   `echo $XDG_SESSION_TYPE`, `gsettings get org.gnome.desktop.interface gtk-theme`,
+   `ls /usr/share/gnome-shell/theme/Yaru/gnome-shell-theme.gresource` and `command -v macify`.
+   Tell me how this differs from what macify was tested on (Ubuntu 26.04, GNOME Shell 50, Wayland).
+3. Save my current look so I can compare later:
+   `gsettings list-recursively org.gnome.desktop.interface > ~/macify-before.txt`.
+4. Tell me what install.sh will change (apt packages, themes in my home folder, the GDM login
+   theme under /usr/share) and wait for my go-ahead. Never run sudo yourself: I run
+   `cd ~/code/macify && ./install.sh` in my own terminal.
+5. After I log out and back in, I run `macify mac` in my terminal (it asks for sudo to copy the
+   login theme). Then check `gsettings get org.gnome.desktop.interface gtk-theme` and
+   `gnome-extensions list --enabled`, and remind me that `macify ubuntu` switches back.
+```
+
 ## What it sets up
 
 | Component | What you get |
